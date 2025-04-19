@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CardData
+namespace CardTutorialData
 {
     [CreateAssetMenu(fileName = "New Card", menuName = "Card")]
     public class Card : ScriptableObject
@@ -18,21 +18,21 @@ namespace CardData
         public enum CardType
         {
             Fire,
-            Water,
             Earth,
-            Air,
+            Water,
             Dark,
             Light,
+            Air
         }
 
         public enum DamageType
         {
             Fire,
-            Water,
             Earth,
-            Air,
+            Water,
             Dark,
             Light,
+            Air
         }
 
 

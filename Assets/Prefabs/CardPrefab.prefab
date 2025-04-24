@@ -1337,7 +1337,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 100, y: 100, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5729822648800522755}
@@ -1355,8 +1355,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74943130588435f41a9309760fa4a094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardData: {fileID: 0}
+  cardData: {fileID: 11400000, guid: 55134de1211b3bb4eab7e5bd30b676b7, type: 2}
   cardImage: {fileID: 5010843136571587602}
+  damageImage: {fileID: 4223144698340974573}
   nameText: {fileID: 6407014356383571323}
   healthText: {fileID: 5201342578672834136}
   damageText: {fileID: 7556595748521711265}

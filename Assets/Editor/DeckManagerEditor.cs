@@ -14,6 +14,7 @@ public class DeckManagerEditor : Editor
         DeckManager deckManager = (DeckManager)target;
         if (GUILayout.Button("Draw Next Card")){
             HandManager handManager = FindFirstObjectByType<HandManager>();
+            // Used to be FindObjectOfType 
             if (handManager != null){
                 deckManager.DrawCard(handManager);
             }

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
+public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler,  
 {
     private RectTransform rectTransform;
     private Canvas canvas;
@@ -50,6 +50,9 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
         if (needUpdateCardPlayPosition)
         {
             updateCardPlayPostion();
+            Debug.Log($"{originalPosition}");
+            Debug.Log($"{originalScale}");
+            Debug.Log($"{originalRotation}");
         }
 
         if (needUpdatePlayPosition)
@@ -91,6 +94,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        Debug.Log("Hello");
         if (currentState == 0)
         {
             originalPosition = rectTransform.localPosition;
@@ -98,6 +102,8 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
             originalScale = rectTransform.localScale;
 
             currentState = 1;
+
+            
         }
     }
 
@@ -111,6 +117,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        Debug.Log("Hello");
         if (currentState == 1)
         {
             currentState = 2;
@@ -119,6 +126,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
 
     public void OnDrag(PointerEventData eventData)
     {
+        Debug.Log("Hello");
         if (currentState == 2)
         {
             if (Input.mousePosition.y > cardPlay.y)

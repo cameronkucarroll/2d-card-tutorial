@@ -1,100 +1,78 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
-public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler,  
+
+public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
+
+    // variables 
     private RectTransform rectTransform;
     private Canvas canvas;
-    private RectTransform canvasRectTranform;
-    private Vector3 originalScale;
+    private Vector2 originalLocalPointerPosition; // store our mouse postion (mouse pointer) 
+    private Vector3 originalPanelLocalPosition; // cards origanal location?
+    private Vector3 originalScale; // the card and or mouse pointers origanal scale
     private int currentState = 0;
-    private Quaternion originalRotation;
-    private Vector3 originalPosition;
+    private Quaternion originalRotation; // origanal card rotation
+    private Vector3 originalPosition; //    card prefab origanal position? 
 
-    [SerializeField] private float selectScale = 1.1f;
-    [SerializeField] private Vector2 cardPlay;
-    [SerializeField] private Vector3 playPosition;
-    [SerializeField] private GameObject glowEffect;
-    [SerializeField] private GameObject playArrow;
-    [SerializeField] private float lerpFactor = 0.1f;
-    [SerializeField] private int cardPlayDivider = 4;
-    [SerializeField] private float cardPlayMultiplier = 1f;
-    [SerializeField] private bool needUpdateCardPlayPosition = false;
-    [SerializeField] private int playPositionYDivider = 2;
-    [SerializeField] private float playPositionYMultiplier = 1f;
-    [SerializeField] private int playPositionXDivider = 4;
-    [SerializeField] private float playPositionXMultiplier = 1f;
-    [SerializeField] private bool needUpdatePlayPosition = false;
+    [SerializeField] private float selectScale = 1.1f; // scales the card when hovering over it
+    // serializefeild makes it so that even a private variable can be edited and looked at in the inspector
+    [SerializeField] private Vector2 cardPlay; // position where if our mouse goes past it its gonna push said card into play postiton
+    [SerializeField] private Vector3 playPosition; // where card is gonna jump to when card is played
+    [SerializeField] private GameObject glowEffect; // stores are new sprite for glow effect
+    [SerializeField] private GameObject playArrow; //
+    [SerializeField] private float lerpFacotor = 0.1f;
 
-    void Awake()
+    void Awake() // when this object is activated
     {
-        rectTransform = GetComponent<RectTransform>();
-        canvas = GetComponentInParent<Canvas>();
-
-        if (canvas != null)
-        {
-            canvasRectTranform = canvas.GetComponent<RectTransform>();
-        }
-
-        originalScale = rectTransform.localScale;
-        originalPosition = rectTransform.localPosition;
+       
+        // store our starting position variables
+        rectTransform = GetComponent<RectTransform>(); 
+        // RectTransform is used to store and manipulate the position, size and anchoring of a rectangle
+        canvas = GetComponentInParent<Canvas>(); // store whatever canvas componet is stored here
+        originalScale = rectTransform.localScale; // sets  our origanalScale to the origanal scale for the card
+        originalPosition = rectTransform.localPosition; // gets the current rect transform postion of the card and sets the origanalPosition to that number
         originalRotation = rectTransform.localRotation;
 
-        updateCardPlayPostion();
-        updatePlayPostion();
     }
-
     void Update()
     {
-        if (needUpdateCardPlayPosition)
-        {
-            updateCardPlayPostion();
-            Debug.Log($"{originalPosition}");
-            Debug.Log($"{originalScale}");
-            Debug.Log($"{originalRotation}");
-        }
-
-        if (needUpdatePlayPosition)
-        {
-            updatePlayPostion();
-        }
-        
-        switch (currentState)
-        {
+        switch (currentState) // match state casements in python instead of using alot of else if statements
+        {                       // if current state is 1 = case 1:
             case 1:
                 HandleHoverState();
                 break;
             case 2:
                 HandleDragState();
-                if (!Input.GetMouseButton(0)) //Check if mouse button is released
+                if (!Input.GetMouseButton(0)) // if mouse button is released
                 {
-                    TransitionToState0();
-                }
+                    TransitionToState0(); // a method to set the card back to its origanal position
+                } // check if mouse button is released
                 break;
             case 3:
                 HandlePlayState();
-                if (!Input.GetMouseButton(0)) //Check if mouse button is released
+                if (!Input.GetMouseButton(0))
                 {
                     TransitionToState0();
                 }
                 break;
         }
+
     }
 
     private void TransitionToState0()
     {
-        currentState = 0;
-        rectTransform.localScale = originalScale; //Reset Scale
-        rectTransform.localRotation = originalRotation; //Reset Rotation
-        rectTransform.localPosition = originalPosition; //Reset Position
-        glowEffect.SetActive(false); //Disable glow effect
-        playArrow.SetActive(false); //Disable playArrow
+        currentState = 0; // changing the switch current state statement to 0
+        rectTransform.localScale = originalScale; // sets the rectTransform scale back to the origanal scale we set earlier, tldr resets scale
+        rectTransform.localRotation = originalRotation; // resets rotation
+        rectTransform.localPosition = originalPosition; // resets position
+        glowEffect.SetActive(false); // disable the glow effect on the card
+        playArrow.SetActive(false); // disables play arrow
+
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public void OnPointerEnter(PointerEventData eventData) // on mouse pointer enter ( the mouse enters the canvas ) set currentState to 1 which will run HandleHoverState
     {
-        Debug.Log("Hello");
         if (currentState == 0)
         {
             originalPosition = rectTransform.localPosition;
@@ -102,53 +80,64 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
             originalScale = rectTransform.localScale;
 
             currentState = 1;
-
-            
         }
+
+
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    public void OnPointerExit(PointerEventData eventData) // on mouse pointer exit of the canvas set state to 0 (reset its postion)
     {
         if (currentState == 1)
         {
+            
             TransitionToState0();
+
         }
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log("Hello");
         if (currentState == 1)
         {
             currentState = 2;
+            // this makes sure we get the correct position within the camrea and the world
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.GetComponent<RectTransform>(), eventData.position, eventData.pressEventCamera, out originalLocalPointerPosition);
+            originalPanelLocalPosition = rectTransform.localPosition;
+
         }
     }
-
     public void OnDrag(PointerEventData eventData)
     {
-        Debug.Log("Hello");
         if (currentState == 2)
         {
-            if (Input.mousePosition.y > cardPlay.y)
+            Vector2 localPointerPosition;
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.GetComponent<RectTransform>(), eventData.position, eventData.pressEventCamera, out localPointerPosition))
             {
-                currentState = 3;
-                playArrow.SetActive(true);
-                rectTransform.localPosition = Vector3.Lerp(rectTransform.position, playPosition, lerpFactor);
+                rectTransform.position = Vector3.Lerp(rectTransform.position, Input.mousePosition, lerpFacotor);
+
+                if (rectTransform.localPosition.y > cardPlay.y)
+                {
+                    currentState = 3;
+                    playArrow.SetActive(true);
+                    rectTransform.localPosition = Vector3.Lerp(rectTransform.position, playPosition, lerpFacotor);
+                }
             }
         }
     }
 
-    private void HandleHoverState()
+
+
+    private void HandleHoverState() // sets the current canvases glow effect to ture and scale it up by the select state
     {
         glowEffect.SetActive(true);
         rectTransform.localScale = originalScale * selectScale;
     }
 
+   
     private void HandleDragState()
     {
-        //Set the card's rotation to zero
+        // sets the cards rotation to 0
         rectTransform.localRotation = Quaternion.identity;
-        rectTransform.position = Vector3.Lerp(rectTransform.position, Input.mousePosition, lerpFactor);
     }
 
     private void HandlePlayState()
@@ -156,32 +145,11 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
         rectTransform.localPosition = playPosition;
         rectTransform.localRotation = Quaternion.identity;
 
-        if (Input.mousePosition.y < cardPlay.y)
+        if(Input.mousePosition.y < cardPlay.y)
         {
             currentState = 2;
             playArrow.SetActive(false);
         }
-    }
-
-    private void updateCardPlayPostion()
-    {
-        if (cardPlayDivider != 0 && canvasRectTranform != null)
-        {
-            float segment = cardPlayMultiplier / cardPlayDivider;
-
-            cardPlay.y = canvasRectTranform.rect.height * segment;
-        }
-    }
-
-    private void updatePlayPostion()
-    {
-        if (canvasRectTranform != null && playPositionYDivider != 0 && playPositionXDivider != 0)
-        {
-            float segmentX = playPositionXMultiplier / playPositionXDivider;
-            float segmentY = playPositionYMultiplier / playPositionYDivider;
-
-            playPosition.x = canvasRectTranform.rect.width * segmentX;
-            playPosition.y = canvasRectTranform.rect.height * segmentY;
-        }
+        
     }
 }

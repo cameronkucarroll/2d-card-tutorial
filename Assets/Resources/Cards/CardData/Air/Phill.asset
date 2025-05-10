@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c44488b27c8a50941b66177c7ce95a2d, type: 3}
   m_Name: Phill
   m_EditorClassIdentifier: 
-  cardName: 
+  cardName: Phill
   cardType: 0500000002000000
   health: 16
   damageMin: 2
